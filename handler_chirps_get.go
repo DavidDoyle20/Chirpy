@@ -16,11 +16,6 @@ func (cfg *apiConfig) getChirpsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var chirpResp []Chirp
 	for _, c := range chirps {
-		if err != nil {
-			log.Println(err)
-			respondWithError(w, 400, "could not marshal chirp")
-			return
-		}
 		chirpResp = append(chirpResp, Chirp{
 			Id: c.ID,
 			Created_at: c.CreatedAt,

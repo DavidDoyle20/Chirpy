@@ -44,7 +44,7 @@ func TestReplaceBadWords(t *testing.T) {
 		{"KerFufflE", "****", false},
 	}
 	for _, tc := range testCases {
-		t.Run(fmt.Sprintf("%s", tc.a), func(t *testing.T) {
+		t.Run(tc.a, func(t *testing.T) {
 			if got := replaceBadWords(tc.a); got != tc.want {
 				t.Errorf("replaceBadWords(%s) => %s", tc.a, got)
 			}
