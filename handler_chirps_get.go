@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -28,7 +29,9 @@ func (cfg *apiConfig) getChirpsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *apiConfig) getChirpByIDHandler(w http.ResponseWriter, r *http.Request) {
-	chirpID, err := uuid.Parse(r.PathValue("chirpID"))
+	chirpIDStr := strings.TrimPrefix(r.URL.Path, "/api/chirps/")
+	log.Println(chirpIDStr)
+	chirpID, err := uuid.Parse(chirpIDStr)
 	if err != nil {
 		log.Println(err)
 		respondWithError(w, 400, "uuid format incorrect")

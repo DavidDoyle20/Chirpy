@@ -80,7 +80,9 @@ func main() {
 	mux.HandleFunc("POST /api/login", apiCfg.loginHandler)
 	mux.HandleFunc("POST /api/refresh", apiCfg.refreshHandler)
 	mux.HandleFunc("POST /api/revoke", apiCfg.revokeHandler)
-
+	mux.HandleFunc("PUT /api/users", apiCfg.editUsersHandler)
+	mux.HandleFunc("DELETE /api/chirps/{chirpID}", apiCfg.deleteChirpHandler)
+ 
 	err = server.ListenAndServe()
 	if err != nil {
 		fmt.Println(err)

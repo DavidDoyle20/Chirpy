@@ -19,3 +19,14 @@ SELECT * FROM chirps
 -- name: GetChirps :many
 SELECT * FROM chirps
 ORDER BY created_at;
+
+-- name: GetChirpAuthor :one
+SELECT users.* FROM chirps
+JOIN users ON chirps.user_id = users.id
+WHERE chirps.id = $1
+;
+
+-- name: RemoveChirp :exec
+DELETE FROM chirps
+WHERE id = $1
+;
