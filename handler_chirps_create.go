@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"chirpy/internal/auth"
-	"fmt"
 	"strings"
 	"chirpy/internal/database"
 )
@@ -23,21 +22,14 @@ func (cfg *apiConfig) createChirpHandler(w http.ResponseWriter, r *http.Request)
 		respondWithError(w, 500, err.Error())
 		return
 	}
-	// only if one is not given
-	if len(r.Header.Get("Authorization")) == 0 {
-		r.Header.Set("Authorization", "Bearer "+cfg.jwt)
-	}
-
 	tokenString, err := auth.GetBearerToken(r.Header)
 	if err != nil {
 		log.Println("There was an error while getting the bearer token")
 		respondWithError(w, 401, "Unauthorized")
 		return
 	}
-	if tokenString != cfg.jwt {
-		fmt.Println("Another jwt was provided")
-	}
 	userID, err := auth.ValidateJWT(tokenString, cfg.secretKey)
+	log.Println(tokenString)
 	if err != nil {
 		log.Println("Could not validate jwt", err)
 		respondWithError(w, 401, "Unauthorized")

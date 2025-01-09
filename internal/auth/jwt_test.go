@@ -15,7 +15,7 @@ func TestMakeJWT(t *testing.T) {
 	tokenSecret := "test_secret"
 	expiresIn := time.Hour
 
-	tokenString, err := MakeJWT(userID, tokenSecret, expiresIn)
+	tokenString, err := MakeJWT(userID, tokenSecret)
 
 	assert.NoError(t, err, "Should not return an error when creating a token")
 	assert.NotEmpty(t, tokenString, "Should return a non-empty token string")
@@ -39,7 +39,7 @@ func TestValidateJWT(t *testing.T) {
 	expiresIn := time.Hour
 
 	// Create a valid token
-	tokenString, err := MakeJWT(userID, tokenSecret, expiresIn)
+	tokenString, err := MakeJWT(userID, tokenSecret)
 	assert.NoError(t, err, "Should not error when creating a token")
 
 	// Test valid token validation
@@ -51,13 +51,6 @@ func TestValidateJWT(t *testing.T) {
 	_, err = ValidateJWT(tokenString, "wrong_secret")
 	assert.Error(t, err, "Should error with incorrect secret")
 	assert.ErrorIs(t, err, jwt.ErrSignatureInvalid, "Error should be due to signature invalid")
-
-	// Test an expired token (simulate time passing)
-	expiredTokenString, err := MakeJWT(userID, tokenSecret, -time.Hour)
-	assert.NoError(t, err, "Should not error when creating expired token")
-	_, err = ValidateJWT(expiredTokenString, tokenSecret)
-	assert.Error(t, err, "Should error with expired token")
-	assert.ErrorIs(t, err, jwt.ErrTokenExpired, "Error should be due to expired token")
 
 	// Test token with invalid claims (e.g. wrong issuer)
 	wrongIssuerToken := jwt.NewWithClaims(jwt.SigningMethodHS256, &jwt.RegisteredClaims{

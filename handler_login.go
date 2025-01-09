@@ -1,11 +1,12 @@
 package main
 
 import (
+	"chirpy/internal/auth"
+	"chirpy/internal/database"
+	"encoding/json"
+	"log"
 	"net/http"
 	"time"
-	"encoding/json"
-	"chirpy/internal/auth"
-	"log"
 )
 
 // check if a user is already logged in
@@ -13,7 +14,6 @@ func (cfg *apiConfig) loginHandler(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Email            string `json:"email"`
 		Password         string `json:"password"`
-		ExpiresInSeconds int    `json:"expires_in_seconds"`
 	}
 	type response struct {
 		ID         string    `json:"id"`
@@ -21,6 +21,7 @@ func (cfg *apiConfig) loginHandler(w http.ResponseWriter, r *http.Request) {
 		Updated_at time.Time `json:"updated_at"`
 		Email      string    `json:"email"`
 		Token      string    `json:"token"`
+		Refresh_token string `json:"refresh_token"`
 	}
 
 	var params parameters
@@ -42,16 +43,22 @@ func (cfg *apiConfig) loginHandler(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, 401, "Incorrect email or password")
 		return
 	}
-	expiresIn := time.Hour
-	if params.ExpiresInSeconds != 0 && params.ExpiresInSeconds < 86400{
-		expiresIn = time.Duration(params.ExpiresInSeconds) * time.Second
-	}
-	token, err := auth.MakeJWT(user.ID, cfg.secretKey, expiresIn)
+	token, err := auth.MakeJWT(user.ID, cfg.secretKey)
 	if err != nil {
 		respondWithError(w, 500, "Could not generate jwt")
 		return
 	}
-	cfg.jwt = token
+
+	refresh_token, err := auth.MakeRefreshToken()
+	cfg.db.RevokeRefreshTokenFromUser(r.Context(), user.ID)
+	cfg.db.AssignRefreshTokenToUser(r.Context(), database.AssignRefreshTokenToUserParams{
+		Token: refresh_token,
+		UserID: user.ID,
+	})
+	if err != nil {
+		respondWithError(w, 500, "Could not generate refresh token")
+		return
+	}
 
 	userAndToken := response{
 		ID:         user.ID.String(),
@@ -59,6 +66,7 @@ func (cfg *apiConfig) loginHandler(w http.ResponseWriter, r *http.Request) {
 		Updated_at: user.UpdatedAt,
 		Email:      user.Email,
 		Token:      token,
+		Refresh_token: refresh_token,
 	}
 
 	respondWithJSON(w, 200, userAndToken)
