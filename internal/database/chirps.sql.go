@@ -60,7 +60,8 @@ func (q *Queries) GetChirp(ctx context.Context, id uuid.UUID) (Chirp, error) {
 }
 
 const getChirpAuthor = `-- name: GetChirpAuthor :one
-SELECT users.id, users.created_at, users.updated_at, users.email, users.hashed_password, users.is_chirpy_red FROM chirps
+SELECT users.id, users.created_at, users.updated_at, users.email, users.hashed_password, users.is_chirpy_red 
+FROM chirps
 JOIN users ON chirps.user_id = users.id
 WHERE chirps.id = $1
 `
@@ -81,11 +82,46 @@ func (q *Queries) GetChirpAuthor(ctx context.Context, id uuid.UUID) (User, error
 
 const getChirps = `-- name: GetChirps :many
 SELECT id, created_at, updated_at, user_id, body FROM chirps
-ORDER BY created_at
+ORDER BY chirps.created_at
 `
 
 func (q *Queries) GetChirps(ctx context.Context) ([]Chirp, error) {
 	rows, err := q.db.QueryContext(ctx, getChirps)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Chirp
+	for rows.Next() {
+		var i Chirp
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.UserID,
+			&i.Body,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChirpsByAuthor = `-- name: GetChirpsByAuthor :many
+SELECT id, created_at, updated_at, user_id, body FROM chirps
+WHERE chirps.user_id = $1
+ORDER BY chirps.created_at
+`
+
+func (q *Queries) GetChirpsByAuthor(ctx context.Context, userID uuid.UUID) ([]Chirp, error) {
+	rows, err := q.db.QueryContext(ctx, getChirpsByAuthor, userID)
 	if err != nil {
 		return nil, err
 	}

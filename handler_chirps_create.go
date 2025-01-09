@@ -29,7 +29,6 @@ func (cfg *apiConfig) createChirpHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	userID, err := auth.ValidateJWT(tokenString, cfg.secretKey)
-	log.Println(tokenString)
 	if err != nil {
 		log.Println("Could not validate jwt", err)
 		respondWithError(w, 401, "Unauthorized")
