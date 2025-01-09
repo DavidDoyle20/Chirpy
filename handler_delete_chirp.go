@@ -15,7 +15,7 @@ func (cfg *apiConfig) deleteChirpHandler(w http.ResponseWriter, r *http.Request)
 		respondWithError(w, 400, "uuid format incorrect")
 		return
 	}
-	token, err := auth.GetBearerToken(r.Header)
+	token, err := auth.GetAuthorizationHeader("Bearer", r.Header)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "No access token in header")
 		return

@@ -22,7 +22,7 @@ func (cfg *apiConfig) createChirpHandler(w http.ResponseWriter, r *http.Request)
 		respondWithError(w, 500, err.Error())
 		return
 	}
-	tokenString, err := auth.GetBearerToken(r.Header)
+	tokenString, err := auth.GetAuthorizationHeader("Bearer", r.Header)
 	if err != nil {
 		log.Println("There was an error while getting the bearer token")
 		respondWithError(w, 401, "Unauthorized")

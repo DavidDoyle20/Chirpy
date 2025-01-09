@@ -7,7 +7,7 @@ import (
 )
 
 func (cfg *apiConfig) revokeHandler(w http.ResponseWriter, r *http.Request) {
-	token, err := auth.GetBearerToken(r.Header)
+	token, err := auth.GetAuthorizationHeader("Bearer", r.Header)
 	if err != nil {
 		respondWithError(w, 500, "No refresh token present in headers")
 	}

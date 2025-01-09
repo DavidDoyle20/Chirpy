@@ -40,5 +40,6 @@ func (cfg *apiConfig) createUserHandler(w http.ResponseWriter, r *http.Request) 
 		Created_at: user.CreatedAt,
 		Updated_at: user.UpdatedAt,
 		Email: user.Email,
+		Is_Chirpy_Red: user.IsChirpyRed.Bool,
 	})
 }

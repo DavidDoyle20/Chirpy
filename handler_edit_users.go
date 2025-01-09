@@ -17,8 +17,9 @@ func (cfg *apiConfig) editUsersHandler(w http.ResponseWriter, r *http.Request) {
 		Created_at string `json:"created_at"`
 		Updated_at string `json:"updated_at"`
 		Email string `json:"email"`
+		Is_Chirpy_Red bool `json:"is_chirpy_red"`
 	}
-	token, err := auth.GetBearerToken(r.Header)
+	token, err := auth.GetAuthorizationHeader("Bearer", r.Header)
 	if err != nil {
 		respondWithError(w, 401, "Could not get access token")
 		return
@@ -73,5 +74,6 @@ func (cfg *apiConfig) editUsersHandler(w http.ResponseWriter, r *http.Request) {
 		Created_at: user.CreatedAt.String(),
 		Updated_at: user.UpdatedAt.String(),
 		Email: user.Email,
+		Is_Chirpy_Red: user.IsChirpyRed.Bool,
 	})
 }

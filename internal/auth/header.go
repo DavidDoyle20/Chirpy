@@ -6,16 +6,16 @@ import (
 	"strings"
 )
 
-func GetBearerToken(headers http.Header) (string, error) {
+func GetAuthorizationHeader(headerName string, headers http.Header) (string, error) {
 	vals := headers.Values("Authorization")
 	tokenString := ""
 	for _, v := range vals {
-		if strings.Contains(v, "Bearer") {
-			tokenString = strings.TrimSpace(strings.Replace(v, "Bearer ", "", 1))
+		if strings.Contains(v, headerName) {
+			tokenString = strings.TrimSpace(strings.Replace(v, headerName, "", 1))
 		}
 	}
 	if tokenString == "" {
-		return "", fmt.Errorf("bearer header doesnt exist")
+		return "", fmt.Errorf("%s header doesnt exist", headerName)
 	}
 	return tokenString, nil
 }

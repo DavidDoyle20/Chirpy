@@ -21,6 +21,7 @@ func (cfg *apiConfig) loginHandler(w http.ResponseWriter, r *http.Request) {
 		Updated_at time.Time `json:"updated_at"`
 		Email      string    `json:"email"`
 		Token      string    `json:"token"`
+		Is_Chirpy_Red bool `json:"is_chirpy_red"`
 		Refresh_token string `json:"refresh_token"`
 	}
 
@@ -65,6 +66,7 @@ func (cfg *apiConfig) loginHandler(w http.ResponseWriter, r *http.Request) {
 		Created_at: user.CreatedAt,
 		Updated_at: user.UpdatedAt,
 		Email:      user.Email,
+		Is_Chirpy_Red: user.IsChirpyRed.Bool,
 		Token:      token,
 		Refresh_token: refresh_token,
 	}

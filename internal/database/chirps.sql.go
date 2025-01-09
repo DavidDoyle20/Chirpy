@@ -60,7 +60,7 @@ func (q *Queries) GetChirp(ctx context.Context, id uuid.UUID) (Chirp, error) {
 }
 
 const getChirpAuthor = `-- name: GetChirpAuthor :one
-SELECT users.id, users.created_at, users.updated_at, users.email, users.hashed_password FROM chirps
+SELECT users.id, users.created_at, users.updated_at, users.email, users.hashed_password, users.is_chirpy_red FROM chirps
 JOIN users ON chirps.user_id = users.id
 WHERE chirps.id = $1
 `
@@ -74,6 +74,7 @@ func (q *Queries) GetChirpAuthor(ctx context.Context, id uuid.UUID) (User, error
 		&i.UpdatedAt,
 		&i.Email,
 		&i.HashedPassword,
+		&i.IsChirpyRed,
 	)
 	return i, err
 }

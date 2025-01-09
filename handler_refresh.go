@@ -10,7 +10,7 @@ func (cfg *apiConfig) refreshHandler(w http.ResponseWriter, r *http.Request) {
 		Token string `json:"token"`
 	}
 	// requires refresh token to be present in the header
-	token, err := auth.GetBearerToken(r.Header)
+	token, err := auth.GetAuthorizationHeader("Bearer", r.Header)
 	if err != nil {
 		respondWithError(w, 500, "No refresh token present in headers")
 	}
